@@ -1,9 +1,8 @@
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 const systemPrompt = `
 You are a skilled marketing copywriter who specializes in transforming plain customer reviews into persuasive, high-converting testimonials.
