@@ -32,39 +32,51 @@ export default function Home() {
 
   return (
     <main style={styles.container}>
-      <h1 style={styles.title}>TrustBoost AI Testimonial Transformer</h1>
-      <textarea
-        placeholder="Paste customer review here..."
-        rows={6}
-        style={styles.textarea}
-        value={review}
-        onChange={(e) => setReview(e.target.value)}
-      />
-      <button
-        onClick={generateTestimonials}
-        disabled={!review.trim() || loading}
-        style={{
-          ...styles.button,
-          backgroundColor: loading ? "#999" : "#0070f3",
-          cursor: loading ? "not-allowed" : "pointer",
-        }}
-      >
-        {loading ? "Generating..." : "Generate Testimonials"}
-      </button>
+      <header style={styles.header}>
+        <h1 style={styles.title}>✨ TrustBoost AI ✨</h1>
+        <p style={styles.subtitle}>
+          Transform customer feedback into persuasive, high-converting testimonials.
+        </p>
+      </header>
 
-      {error && <p style={styles.error}>{error}</p>}
+      <section style={styles.inputSection}>
+        <textarea
+          placeholder="Paste customer review here..."
+          rows={6}
+          style={styles.textarea}
+          value={review}
+          onChange={(e) => setReview(e.target.value)}
+        />
+        <button
+          onClick={generateTestimonials}
+          disabled={!review.trim() || loading}
+          style={{
+            ...styles.button,
+            background: loading
+              ? "linear-gradient(135deg, #9e9e9e, #bdbdbd)"
+              : "linear-gradient(135deg, #0070f3, #00c6ff)",
+            cursor: loading ? "not-allowed" : "pointer",
+          }}
+        >
+          {loading ? "Generating..." : "🚀 Generate Testimonials"}
+        </button>
+        {error && <p style={styles.error}>{error}</p>}
+      </section>
 
       {results && (
         <section style={styles.results}>
-          <h2 style={styles.resultsTitle}>Results</h2>
+          <h2 style={styles.resultsTitle}>Your Testimonials</h2>
+
           <div style={styles.testimonialBlock}>
             <h3 style={styles.subheading}>1. Professional & Formal</h3>
             <p style={styles.testimonialText}>{results.professional}</p>
           </div>
+
           <div style={styles.testimonialBlock}>
             <h3 style={styles.subheading}>2. Emotional Storytelling</h3>
             <p style={styles.testimonialText}>{results.emotional}</p>
           </div>
+
           <div style={styles.testimonialBlock}>
             <h3 style={styles.subheading}>3. Short Punchy Social Media</h3>
             <p style={styles.testimonialText}>{results.social}</p>
@@ -77,18 +89,34 @@ export default function Home() {
 
 const styles = {
   container: {
-    maxWidth: 700,
+    maxWidth: 800,
     margin: "40px auto",
     padding: 20,
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
     color: "#222",
   },
-  title: {
+  header: {
     textAlign: "center",
-    marginBottom: 20,
-    fontSize: "2rem",
-    fontWeight: "700",
-    color: "#0070f3",
+    marginBottom: 30,
+  },
+  title: {
+    fontSize: "2.5rem",
+    fontWeight: "800",
+    background: "linear-gradient(135deg, #0070f3, #00c6ff)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    margin: 0,
+  },
+  subtitle: {
+    fontSize: "1.1rem",
+    color: "#555",
+    marginTop: 10,
+  },
+  inputSection: {
+    backgroundColor: "#ffffff",
+    padding: 20,
+    borderRadius: 12,
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
   },
   textarea: {
     width: "100%",
@@ -98,15 +126,16 @@ const styles = {
     border: "1.5px solid #ccc",
     resize: "vertical",
     boxSizing: "border-box",
+    marginBottom: 15,
+    transition: "border-color 0.2s ease",
   },
   button: {
-    marginTop: 15,
     padding: "12px 25px",
     fontSize: 18,
     color: "white",
     border: "none",
     borderRadius: 8,
-    transition: "background-color 0.3s ease",
+    transition: "transform 0.2s ease, background 0.3s ease",
   },
   error: {
     marginTop: 15,
@@ -116,9 +145,9 @@ const styles = {
   results: {
     marginTop: 40,
     backgroundColor: "#f7f9fc",
-    borderRadius: 10,
-    padding: 20,
-    boxShadow: "0 4px 12px rgb(0 0 0 / 0.1)",
+    borderRadius: 12,
+    padding: 25,
+    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
   },
   resultsTitle: {
     marginBottom: 20,
@@ -129,6 +158,10 @@ const styles = {
   },
   testimonialBlock: {
     marginBottom: 25,
+    padding: 15,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
   },
   subheading: {
     fontSize: "1.3rem",
