@@ -31,12 +31,12 @@ export default function Home() {
   }
 
   return (
-    <main style={{ maxWidth: 700, margin: "auto", padding: 20, fontFamily: "Arial, sans-serif" }}>
-      <h1>TrustBoost AI Testimonial Transformer</h1>
+    <main style={styles.container}>
+      <h1 style={styles.title}>TrustBoost AI Testimonial Transformer</h1>
       <textarea
         placeholder="Paste customer review here..."
         rows={6}
-        style={{ width: "100%", padding: 10, fontSize: 16 }}
+        style={styles.textarea}
         value={review}
         onChange={(e) => setReview(e.target.value)}
       />
@@ -44,34 +44,40 @@ export default function Home() {
         onClick={generateTestimonials}
         disabled={!review.trim() || loading}
         style={{
-          marginTop: 10,
-          padding: "10px 20px",
-          fontSize: 16,
+          ...styles.button,
+          backgroundColor: loading ? "#999" : "#0070f3",
           cursor: loading ? "not-allowed" : "pointer",
         }}
       >
         {loading ? "Generating..." : "Generate Testimonials"}
       </button>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={styles.error}>{error}</p>}
 
       {results && (
-        <section style={{ marginTop: 30 }}>
-          <h2>Results</h2>
-          <div>
-            <h3>1. Professional & Formal</h3>
-            <p>{results.professional}</p>
+        <section style={styles.results}>
+          <h2 style={styles.resultsTitle}>Results</h2>
+          <div style={styles.testimonialBlock}>
+            <h3 style={styles.subheading}>1. Professional & Formal</h3>
+            <p style={styles.testimonialText}>{results.professional}</p>
           </div>
-          <div>
-            <h3>2. Emotional Storytelling</h3>
-            <p>{results.emotional}</p>
+          <div style={styles.testimonialBlock}>
+            <h3 style={styles.subheading}>2. Emotional Storytelling</h3>
+            <p style={styles.testimonialText}>{results.emotional}</p>
           </div>
-          <div>
-            <h3>3. Short Punchy Social Media</h3>
-            <p>{results.social}</p>
+          <div style={styles.testimonialBlock}>
+            <h3 style={styles.subheading}>3. Short Punchy Social Media</h3>
+            <p style={styles.testimonialText}>{results.social}</p>
           </div>
         </section>
       )}
     </main>
   );
 }
+
+const styles = {
+  container: {
+    maxWidth: 700,
+    margin: "40px auto",
+    padding: 20,
+    fontFami
