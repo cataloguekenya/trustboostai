@@ -34,7 +34,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
@@ -44,20 +44,17 @@ export default async function handler(req, res) {
       temperature: 0.8,
     });
 
-    const text = completion.data.choices[0].message.content;
+    const text = completion.choices[0].message.content;
 
-    // The output will contain 3 testimonials, separated by numbering. Let's split them.
-    // This is a simple approach assuming numbering format "1. ... 2. ... 3. ..."
+    // Simple split by numbers for 3 testimonial parts
     const splitByNumber = text.split(/\n?\d[^\d]/).filter(Boolean);
 
-    // Sometimes GPT returns in different formats; fallback parsing
     let professional = "", emotional = "", social = "";
     if (splitByNumber.length >= 3) {
       professional = splitByNumber[0].trim();
       emotional = splitByNumber[1].trim();
       social = splitByNumber[2].trim();
     } else {
-      // fallback: just split by new lines and assign
       const lines = text.split("\n").filter(Boolean);
       professional = lines[0] || "";
       emotional = lines[1] || "";
