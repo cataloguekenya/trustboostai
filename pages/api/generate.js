@@ -35,7 +35,7 @@ export default async function handler(req, res) {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-3.5-turbo", // switched to gpt-3.5-turbo for cheaper testing
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPromptTemplate(review) },
