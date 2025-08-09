@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Head from "next/head";
 
 export default function Home() {
   const [review, setReview] = useState("");
@@ -31,142 +32,142 @@ export default function Home() {
   }
 
   return (
-    <main style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.title}>✨ TrustBoost AI ✨</h1>
-        <p style={styles.subtitle}>
-          Transform customer feedback into persuasive, high-converting testimonials.
-        </p>
-      </header>
+    <>
+      <Head>
+        <title>TrustBoost AI | Testimonial Transformer</title>
+        <meta name="description" content="Transform plain customer reviews into persuasive, high-converting testimonials with AI." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-      <section style={styles.inputSection}>
-        <textarea
-          placeholder="Paste customer review here..."
-          rows={6}
-          style={styles.textarea}
-          value={review}
-          onChange={(e) => setReview(e.target.value)}
-        />
-        <button
-          onClick={generateTestimonials}
-          disabled={!review.trim() || loading}
-          style={{
-            ...styles.button,
-            background: loading
-              ? "linear-gradient(135deg, #9e9e9e, #bdbdbd)"
-              : "linear-gradient(135deg, #0070f3, #00c6ff)",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Generating..." : "🚀 Generate Testimonials"}
-        </button>
-        {error && <p style={styles.error}>{error}</p>}
-      </section>
+      <div style={styles.page}>
+        <div style={styles.card}>
+          <h1 style={styles.title}>🚀 TrustBoost AI</h1>
+          <p style={styles.subtitle}>
+            Turn any customer review into <strong>3 powerful, marketing-ready testimonials</strong> instantly.
+          </p>
 
-      {results && (
-        <section style={styles.results}>
-          <h2 style={styles.resultsTitle}>Your Testimonials</h2>
+          <textarea
+            placeholder="Paste customer review here..."
+            rows={6}
+            style={styles.textarea}
+            value={review}
+            onChange={(e) => setReview(e.target.value)}
+          />
+          <button
+            onClick={generateTestimonials}
+            disabled={!review.trim() || loading}
+            style={{
+              ...styles.button,
+              backgroundColor: loading ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "Generating..." : "✨ Generate Testimonials"}
+          </button>
 
-          <div style={styles.testimonialBlock}>
-            <h3 style={styles.subheading}>1. Professional & Formal</h3>
-            <p style={styles.testimonialText}>{results.professional}</p>
-          </div>
+          {error && <p style={styles.error}>{error}</p>}
 
-          <div style={styles.testimonialBlock}>
-            <h3 style={styles.subheading}>2. Emotional Storytelling</h3>
-            <p style={styles.testimonialText}>{results.emotional}</p>
-          </div>
-
-          <div style={styles.testimonialBlock}>
-            <h3 style={styles.subheading}>3. Short Punchy Social Media</h3>
-            <p style={styles.testimonialText}>{results.social}</p>
-          </div>
-        </section>
-      )}
-    </main>
+          {results && (
+            <section style={styles.results}>
+              <h2 style={styles.resultsTitle}>Results</h2>
+              <div style={styles.testimonialBlock}>
+                <h3 style={styles.subheading}>1️⃣ Professional & Formal</h3>
+                <p style={styles.testimonialText}>{results.professional}</p>
+              </div>
+              <div style={styles.testimonialBlock}>
+                <h3 style={styles.subheading}>2️⃣ Emotional Storytelling</h3>
+                <p style={styles.testimonialText}>{results.emotional}</p>
+              </div>
+              <div style={styles.testimonialBlock}>
+                <h3 style={styles.subheading}>3️⃣ Short Punchy Social Media</h3>
+                <p style={styles.testimonialText}>{results.social}</p>
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 
 const styles = {
-  container: {
-    maxWidth: 800,
-    margin: "40px auto",
+  page: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    color: "#222",
+    background: "linear-gradient(135deg, #6e8efb, #a777e3)",
   },
-  header: {
-    textAlign: "center",
-    marginBottom: 30,
+  card: {
+    width: "100%",
+    maxWidth: 750,
+    background: "rgba(255,255,255,0.15)",
+    borderRadius: 20,
+    padding: "40px 30px",
+    backdropFilter: "blur(15px)",
+    boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+    color: "#fff",
   },
   title: {
     fontSize: "2.5rem",
     fontWeight: "800",
-    background: "linear-gradient(135deg, #0070f3, #00c6ff)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    margin: 0,
+    textAlign: "center",
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: "1.1rem",
-    color: "#555",
-    marginTop: 10,
-  },
-  inputSection: {
-    backgroundColor: "#ffffff",
-    padding: 20,
-    borderRadius: 12,
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+    textAlign: "center",
+    marginBottom: 30,
+    color: "#f1f1f1",
   },
   textarea: {
     width: "100%",
     padding: 15,
     fontSize: 16,
-    borderRadius: 8,
-    border: "1.5px solid #ccc",
+    borderRadius: 10,
+    border: "none",
     resize: "vertical",
     boxSizing: "border-box",
     marginBottom: 15,
-    transition: "border-color 0.2s ease",
+    background: "rgba(255,255,255,0.2)",
+    color: "#fff",
+    outline: "none",
   },
   button: {
+    width: "100%",
     padding: "12px 25px",
     fontSize: 18,
-    color: "white",
+    color: "#fff",
     border: "none",
     borderRadius: 8,
-    transition: "transform 0.2s ease, background 0.3s ease",
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(5px)",
   },
   error: {
     marginTop: 15,
-    color: "red",
+    color: "#ff6b6b",
     fontWeight: "600",
   },
   results: {
-    marginTop: 40,
-    backgroundColor: "#f7f9fc",
-    borderRadius: 12,
-    padding: 25,
-    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+    marginTop: 30,
+    background: "rgba(255,255,255,0.1)",
+    borderRadius: 10,
+    padding: 20,
   },
   resultsTitle: {
     marginBottom: 20,
-    fontSize: "1.8rem",
-    color: "#222",
-    borderBottom: "2px solid #0070f3",
+    fontSize: "1.6rem",
+    borderBottom: "1px solid rgba(255,255,255,0.3)",
     paddingBottom: 6,
   },
   testimonialBlock: {
-    marginBottom: 25,
-    padding: 15,
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+    marginBottom: 20,
   },
   subheading: {
-    fontSize: "1.3rem",
+    fontSize: "1.2rem",
     marginBottom: 8,
-    color: "#0051a3",
+    color: "#ffdd59",
   },
   testimonialText: {
     fontSize: 16,
