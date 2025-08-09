@@ -1,8 +1,7 @@
-import OpenAI from "openai";
+import fetch from "node-fetch";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY_TWO,
-});
+const GROK_API_KEY = process.env.GROK_API_KEY;
+const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
 const systemPrompt = `
 You are a skilled marketing copywriter who specializes in transforming plain customer reviews into persuasive, high-converting testimonials.
@@ -27,6 +26,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
+
   const { review } = req.body;
 
   if (!review || review.trim().length < 10) {
@@ -34,17 +34,32 @@ export default async function handler(req, res) {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // switched to gpt-3.5-turbo for cheaper testing
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPromptTemplate(review) },
-      ],
-      max_tokens: 600,
-      temperature: 0.8,
+    const response = await fetch(GROK_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${GROK_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "grok-4o-mini", // Use appropriate Grok model name
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPromptTemplate(review) },
+        ],
+        max_tokens: 600,
+        temperature: 0.8,
+      }),
     });
 
-    const text = completion.choices[0].message.content;
+    if (!response.ok) {
+      const errorDetails = await response.text();
+      console.error("Grok API error:", errorDetails);
+      return res.status(response.status).json({ error: "Failed to generate testimonials." });
+    }
+
+    const data = await response.json();
+
+    const text = data.choices[0].message.content;
 
     // Simple split by numbers for 3 testimonial parts
     const splitByNumber = text.split(/\n?\d[^\d]/).filter(Boolean);
@@ -63,7 +78,7 @@ export default async function handler(req, res) {
 
     res.status(200).json({ professional, emotional, social });
   } catch (error) {
-    console.error("OpenAI API error:", error.response?.data || error.message);
-    res.status(500).json({ error: "Failed to generate testimonials." });
+    console.error("API handler error:", error);
+    res.status(500).json({ error: "Server error generating testimonials." });
   }
 }
