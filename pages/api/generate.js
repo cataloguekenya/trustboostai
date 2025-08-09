@@ -41,44 +41,36 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${GROK_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "grok-4o-mini", // Use appropriate Grok model name
+        model: "grok-4-latest",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPromptTemplate(review) },
         ],
-        max_tokens: 600,
+        stream: false,
         temperature: 0.8,
+        max_tokens: 600,
       }),
     });
 
     if (!response.ok) {
-      const errorDetails = await response.text();
-      console.error("Grok API error:", errorDetails);
+      const errorText = await response.text();
+      console.error("Grok API error:", errorText);
       return res.status(response.status).json({ error: "Failed to generate testimonials." });
     }
 
     const data = await response.json();
-
     const text = data.choices[0].message.content;
 
-    // Simple split by numbers for 3 testimonial parts
-    const splitByNumber = text.split(/\n?\d[^\d]/).filter(Boolean);
+    // Simple split into 3 testimonial parts
+    const parts = text.split(/\n?\d[^\d]/).filter(Boolean);
 
-    let professional = "", emotional = "", social = "";
-    if (splitByNumber.length >= 3) {
-      professional = splitByNumber[0].trim();
-      emotional = splitByNumber[1].trim();
-      social = splitByNumber[2].trim();
-    } else {
-      const lines = text.split("\n").filter(Boolean);
-      professional = lines[0] || "";
-      emotional = lines[1] || "";
-      social = lines[2] || "";
-    }
+    const professional = parts[0]?.trim() || "";
+    const emotional = parts[1]?.trim() || "";
+    const social = parts[2]?.trim() || "";
 
     res.status(200).json({ professional, emotional, social });
   } catch (error) {
-    console.error("API handler error:", error);
+    console.error("API error:", error);
     res.status(500).json({ error: "Server error generating testimonials." });
   }
 }
