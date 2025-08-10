@@ -1,28 +1,10 @@
 // pages/api/generate.js
+
 import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY_TWO,
 });
-
-const systemPrompt = `
-You are a skilled marketing copywriter who specializes in transforming plain customer reviews into persuasive, high-converting testimonials.
-Follow tone and length instructions exactly. Keep content authentic but polished.
-Never invent facts that are not in the original review.
-`;
-
-const userPromptTemplate = (review) => `
-Transform the following customer review into three distinct marketing-ready testimonials:
-
-1️⃣ Professional & Formal — Maintain a businesslike tone, perfect for corporate websites and proposals. Around 70–100 words.
-
-2️⃣ Emotional Storytelling — Capture the emotional journey of the customer and the impact your product/service had. Around 100–130 words.
-
-3️⃣ Short Punchy Social Media Post — Make it catchy, engaging, and under 25 words, suitable for Instagram/Twitter. Include one relevant emoji.
-
-Here is the customer review:
-"${review}"
-`;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -31,52 +13,42 @@ export default async function handler(req, res) {
 
   const { review } = req.body;
 
-  if (!review || review.trim().length < 10) {
-    return res.status(400).json({ error: "Please provide a detailed review text." });
+  if (!review) {
+    return res.status(400).json({ error: "Review is required" });
   }
 
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPromptTemplate(review) },
+        {
+          role: "system",
+          content: "You are a helpful assistant that generates customer testimonials.",
+        },
+        {
+          role: "user",
+          content: `Generate a positive customer testimonial based on this review: "${review}"`,
+        },
       ],
-      max_tokens: 600,
-      temperature: 0.8,
+      max_tokens: 200,
     });
 
-    const text = completion.choices[0]?.message?.content || "";
-
-    // Split into 3 testimonial types
-    const splitByNumber = text.split(/\n?\d[^\d]/).filter(Boolean);
-    let professional = "", emotional = "", social = "";
-
-    if (splitByNumber.length >= 3) {
-      professional = splitByNumber[0].trim();
-      emotional = splitByNumber[1].trim();
-      social = splitByNumber[2].trim();
-    } else {
-      const lines = text.split("\n").filter(Boolean);
-      professional = lines[0] || "";
-      emotional = lines[1] || "";
-      social = lines[2] || "";
-    }
-
-    res.status(200).json({ professional, emotional, social });
+    res.status(200).json({
+      testimonial: completion.choices[0].message.content.trim(),
+    });
 
   } catch (error) {
-    console.error("OpenAI API error:", error.response?.data || error.message);
+    console.error("OpenAI API error:", error.message);
 
-    // Handle quota errors
-    if (error.response?.status === 429) {
+    // Friendly error messages
+    if (error.status === 429) {
       return res.status(429).json({
-        error: "⚠️ OpenAI usage limit reached. Please try again later."
+        error: "We’ve hit the API usage limit. Please try again later or check your plan.",
       });
     }
 
     res.status(500).json({
-      error: "Failed to generate testimonials. Please try again later."
+      error: "Something went wrong while generating the testimonial. Please try again.",
     });
   }
 }
