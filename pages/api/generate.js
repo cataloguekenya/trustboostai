@@ -1,3 +1,4 @@
+// pages/api/generate.js
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -27,6 +28,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
+
   const { review } = req.body;
 
   if (!review || review.trim().length < 10) {
@@ -44,12 +46,12 @@ export default async function handler(req, res) {
       temperature: 0.8,
     });
 
-    const text = completion.choices[0].message.content;
+    const text = completion.choices[0]?.message?.content || "";
 
-    // Simple split by numbers for 3 testimonial parts
+    // Split into 3 testimonial types
     const splitByNumber = text.split(/\n?\d[^\d]/).filter(Boolean);
-
     let professional = "", emotional = "", social = "";
+
     if (splitByNumber.length >= 3) {
       professional = splitByNumber[0].trim();
       emotional = splitByNumber[1].trim();
@@ -62,8 +64,19 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({ professional, emotional, social });
+
   } catch (error) {
     console.error("OpenAI API error:", error.response?.data || error.message);
-    res.status(500).json({ error: "Failed to generate testimonials." });
+
+    // Handle quota errors
+    if (error.response?.status === 429) {
+      return res.status(429).json({
+        error: "⚠️ OpenAI usage limit reached. Please try again later."
+      });
+    }
+
+    res.status(500).json({
+      error: "Failed to generate testimonials. Please try again later."
+    });
   }
 }
